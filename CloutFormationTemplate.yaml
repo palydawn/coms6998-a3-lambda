@@ -1,0 +1,306 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: CD Demo Lambda
+Resources:
+  SearchLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Code:
+        S3Bucket: lambdapipeline-demo
+        S3Key: 6164b1e2385292f16a190627d7c93ee6
+      Description: Lambda function for CD Demo
+      Tags:
+        - Value: SAM
+          Key: 'lambda:createdBy'
+      MemorySize: 128
+      Environment:
+        Variables:
+          REGION: us-east-1
+      Handler: lambda_function.lambda_handler
+      Role: >-
+        arn:aws:iam::409408139754:role/service-role/codepipeline_lambda-role-yuqyw2bl
+      Timeout: 30
+      Runtime: python3.6
+      FunctionName: LF2
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: ea976a5d-39b7-4b04-83b9-a479b1705343
+    DependsOn:
+      - LambdaPipeline
+  ServerlessRestApiDeploymentb2888a1f04:
+    Type: 'AWS::ApiGateway::Deployment'
+    Properties:
+      RestApiId: !Ref ServerlessRestApi
+      Description: 'RestApi deployment id: b2888a1f04b1548de038d0115e232e9346719611'
+      StageName: Stage
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 39cd954e-8598-49cf-82fb-a074af729c5b
+  ServerlessRestApi:
+    Type: 'AWS::ApiGateway::RestApi'
+    Properties:
+      Body:
+        info:
+          version: '1.0'
+          title: !Ref 'AWS::StackName'
+        paths:
+          /getazs:
+            get:
+              x-amazon-apigateway-integration:
+                httpMethod: POST
+                type: aws_proxy
+                uri: !Sub >-
+                  arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${IndexLambda.Arn}/invocations
+              responses: {}
+        swagger: '2.0'
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 9232f849-b895-4ad1-bfa2-b04717411c14
+    DependsOn:
+      - SearchLambda
+  ServerlessRestApiProdStage:
+    Type: 'AWS::ApiGateway::Stage'
+    Properties:
+      DeploymentId: !Ref ServerlessRestApiDeploymentb2888a1f04
+      RestApiId: !Ref ServerlessRestApi
+      StageName: Prod
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 5b24ea44-11e8-40b5-8ccf-59c475758ea2
+  S3B1:
+    Type: 'AWS::S3::Bucket'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: b7a59212-3b5e-4ad1-b275-91d1285b5eb3
+    DependsOn:
+      - ServerlessRestApi
+      - FrontPipeline
+  S3B2:
+    Type: 'AWS::S3::AccessPoint'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: ea8366c9-9064-4bd5-800b-86c4c654d2ff
+    DependsOn:
+      - ServerlessRestApi
+      - IndexLambda
+  IndexLambda:
+    Type: 'AWS::Lambda::Function'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: a9f93cf4-fa4b-49b6-aa62-c14471c0f4c1
+    DependsOn:
+      - LambdaPipeline
+  LambdaPipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+    DependsOn:
+      - CloudFormationRole
+  FrontPipeline:
+    Type: 'AWS::CodePipeline::Pipeline'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 293c0cc1-f7ef-4d24-969a-5a63305850a2
+  CloudFormationRole:
+    Type: 'AWS::IAM::Role'
+    Properties: {}
+    Metadata:
+      'AWS::CloudFormation::Designer':
+        id: 8a86a4d5-ead0-4a95-a2c2-6297990998a5
+Metadata:
+  'AWS::CloudFormation::Designer':
+    9232f849-b895-4ad1-bfa2-b04717411c14:
+      size:
+        width: 250
+        height: 80
+      position:
+        x: -80
+        'y': 60
+      z: 1
+      embeds:
+        - 39cd954e-8598-49cf-82fb-a074af729c5b
+        - 5b24ea44-11e8-40b5-8ccf-59c475758ea2
+      dependson:
+        - ea976a5d-39b7-4b04-83b9-a479b1705343
+    39cd954e-8598-49cf-82fb-a074af729c5b:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -50
+        'y': 80
+      z: 2
+      parent: 9232f849-b895-4ad1-bfa2-b04717411c14
+      embeds: []
+      iscontainedinside:
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+    5b24ea44-11e8-40b5-8ccf-59c475758ea2:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 70
+        'y': 80
+      z: 2
+      parent: 9232f849-b895-4ad1-bfa2-b04717411c14
+      embeds: []
+      isassociatedwith:
+        - 39cd954e-8598-49cf-82fb-a074af729c5b
+      iscontainedinside:
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+    ea976a5d-39b7-4b04-83b9-a479b1705343:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 310
+        'y': 60
+      z: 1
+      embeds: []
+      dependson:
+        - 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+    b7a59212-3b5e-4ad1-b275-91d1285b5eb3:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -310
+        'y': 60
+      z: 0
+      embeds: []
+      dependson:
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - 293c0cc1-f7ef-4d24-969a-5a63305850a2
+    ea8366c9-9064-4bd5-800b-86c4c654d2ff:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 20
+        'y': 240
+      z: 0
+      embeds: []
+      dependson:
+        - 9232f849-b895-4ad1-bfa2-b04717411c14
+        - a9f93cf4-fa4b-49b6-aa62-c14471c0f4c1
+    a9f93cf4-fa4b-49b6-aa62-c14471c0f4c1:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 310
+        'y': 240
+      z: 0
+      embeds: []
+      dependson:
+        - 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+    4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 470
+        'y': 160
+      z: 0
+      embeds: []
+      dependson:
+        - 8a86a4d5-ead0-4a95-a2c2-6297990998a5
+    293c0cc1-f7ef-4d24-969a-5a63305850a2:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: -310
+        'y': 230
+      z: 0
+      embeds: []
+      dependson:
+        - b7a59212-3b5e-4ad1-b275-91d1285b5eb3
+    8a86a4d5-ead0-4a95-a2c2-6297990998a5:
+      size:
+        width: 60
+        height: 60
+      position:
+        x: 630
+        'y': 160
+      z: 0
+      embeds: []
+    7ee7a848-0ee6-4d05-9d19-c5b8fcfdc7cf:
+      source:
+        id: 293c0cc1-f7ef-4d24-969a-5a63305850a2
+        selector: 'g:nth-child(1) g:nth-child(4) g:nth-child(1) circle:nth-child(1)     '
+        port: 'AWS::DependencyLink-*'
+      target:
+        id: b7a59212-3b5e-4ad1-b275-91d1285b5eb3
+      z: 4
+    b55b6033-4507-4c79-8ba0-f95166e27a91:
+      source:
+        id: 293c0cc1-f7ef-4d24-969a-5a63305850a2
+        selector: 'g:nth-child(1) g:nth-child(4) g:nth-child(1) circle:nth-child(1)     '
+        port: 'AWS::DependencyLink-*'
+      target:
+        id: b7a59212-3b5e-4ad1-b275-91d1285b5eb3
+      z: 4
+    fad64822-8810-4d4c-81ae-77d4f6d317c0:
+      source:
+        id: b7a59212-3b5e-4ad1-b275-91d1285b5eb3
+      target:
+        id: 293c0cc1-f7ef-4d24-969a-5a63305850a2
+      z: 3
+    89278bd5-b3c6-4834-b179-756d13d27ee7:
+      source:
+        id: ea8366c9-9064-4bd5-800b-86c4c654d2ff
+      target:
+        id: 9232f849-b895-4ad1-bfa2-b04717411c14
+      z: 4
+    9c34f400-a57d-47a5-bf4c-a366e2c6bb80:
+      source:
+        id: 9232f849-b895-4ad1-bfa2-b04717411c14
+      target:
+        id: ea976a5d-39b7-4b04-83b9-a479b1705343
+      z: 5
+    7813da45-a32c-4d02-be44-e26fac4073ee:
+      source:
+        id: ea8366c9-9064-4bd5-800b-86c4c654d2ff
+      target:
+        id: a9f93cf4-fa4b-49b6-aa62-c14471c0f4c1
+      z: 6
+    b6c675c9-34ad-4ecd-8908-ed0d765dedb3:
+      source:
+        id: ea976a5d-39b7-4b04-83b9-a479b1705343
+      target:
+        id: 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+      z: 7
+    9a181793-2f28-4079-8e33-188a27667fa3:
+      source:
+        id: a9f93cf4-fa4b-49b6-aa62-c14471c0f4c1
+      target:
+        id: 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+      z: 8
+    5118ed8a-6396-46f3-9e42-3ce8d7a658c7:
+      source:
+        id: 4c1e7d2d-b11b-45a0-b613-b4b3be8e04fc
+      target:
+        id: 8a86a4d5-ead0-4a95-a2c2-6297990998a5
+      z: 9

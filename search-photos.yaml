@@ -1,0 +1,31 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: An AWS Serverless Specification template describing your function.
+Resources:
+  searchphotos:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: search-photos-pipeline
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.8
+      CodeUri: ./search-photos
+      Description: ''
+      MemorySize: 128
+      Timeout: 10
+      Role: 'arn:aws:iam::093302234862:role/service-role/search-photos-role-4z6ore42'
+      Events:
+        Api1:
+          Type: Api
+          Properties:
+            Path: /search
+            Method: GET
+      VpcConfig:
+        SecurityGroupIds:
+          - sg-a3509190
+        SubnetIds:
+          - subnet-9f8c33c0
+          - subnet-d1da68b7
+          - subnet-72299053
+          - subnet-afc082e2
+          - subnet-04874635
+          - subnet-e396e2ed
