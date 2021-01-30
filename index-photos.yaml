@@ -5,9 +5,9 @@ Resources:
   indexphotos:
     Type: 'AWS::Serverless::Function'
     Properties:
-      Handler: lambda_function.lambda_handler
+      Handler: index-photos.lambda_handler
       Runtime: python3.8
-      CodeUri: .
+      CodeUri: ./lambda
       Description: ''
       MemorySize: 128
       Timeout: 3
